@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  webview:
+    container_name: webview
+    build:
+      context: .
+      dockerfile: ./docker/webview/Dockerfile
+    volumes:
+      - ./webview/src/:/webview/src/
+    ports:
+      - "3000:3000"
+    networks:
+      - docker-virtual-network
+    tty: true
+    restart: always
+
+networks:
+  docker-virtual-network:
+    external: true
+
+# ネットワーク作成
+## docker network create docker-virtual-network
+
+# ネットワーク削除
+## docker network rm docker-virtual-network
+
+# イメージ作成 & コンテナ起動
+## docker-compose up -d --build
+
+# イメージ削除 & コンテナ削除
+## docker-compose down --rmi all
+
