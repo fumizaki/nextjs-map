@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useLocation } from "@/hooks/useLocation";
+import { Location } from "@/components/map/Map";
+import { useState, useEffect, use } from "react";
 
 const LazyMap = dynamic(() => import("@/components/map/Map"), {
     ssr: false,
@@ -11,7 +13,17 @@ const LazyMap = dynamic(() => import("@/components/map/Map"), {
 
 export default function MapPage() {
 
-    const { currentLocation, error } = useLocation();
+    const { currentLocation, isLoading, watchStatus, error } = useLocation();
+    const [locations, setLocations] = useState<Location[]>([]);
+
+    const fetchLocationList = async () => {
+        const locations = await fetch("/api/location/list").then((res) => res.json());
+        setLocations(locations);
+    }
+
+    useEffect(() => {
+        fetchLocationList();
+    }, [])
 
     if (error) {
         return <div>Error: {error.message}</div>;
@@ -23,11 +35,12 @@ export default function MapPage() {
 
     return (
         <div>
-        <LazyMap
-            center={currentLocation}
-            zoom={13}
-            currentLocation={currentLocation}
-            />
+            <LazyMap
+                center={currentLocation}
+                zoom={11}
+                currentLocation={currentLocation}
+                locations={locations}
+                />
         </div>
     );
 }
